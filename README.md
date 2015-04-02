@@ -61,7 +61,7 @@ Once you have opened the experience in the ArtCode app it should get copied onto
 
 ## Notes
 
-As of 2015-04-02 the experience and marker descriptions usually include HTML tags and elements, which are handled by the app (the raw tags and entities are shown).
+As of 2015-04-02 the experience and marker descriptions have HTML tags stripped out, as they don't seem to be supported by the app at the moment.
 
 As of 2015-04-02 this plugin is using a url-encoded full URL for the experience ID, which appears to break (e.g.) sharing the experience via the app. 
 

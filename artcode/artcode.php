@@ -3,7 +3,7 @@
  * Plugin Name: artcode
  * Plugin URI: https://github.com/cgreenhalgh/wp-artcode
  * Description: Create ArtCodes experiences from wordpress content (pages and posts), to view in the ArtCodes App on Android/iPhone.
- * Version: 0.1.3
+ * Version: 0.1.5
  * Author: Chris Greenhalgh
  * Author URI: http://www.cs.nott.ac.uk/~cmg/
  * Network: true
@@ -370,6 +370,16 @@ function artcode_ajax_marker_search() {
 if ( is_admin() ) {
 	add_action( 'wp_ajax_artcode_marker_search', 'artcode_ajax_marker_search' );
 }
+function artcode_id_from_url( $url ) {
+	$els = preg_split( "/[^a-zA-Z0-9]+/", $url );
+	return implode( "-", $els );
+}
+// ArtCodes app doesn't like HTML, I think
+function artcode_clean_text( $text ) {
+	$text = strip_tags( $text );
+	$text = html_entity_decode($text, ENT_QUOTES, 'UTF-8');
+	return $text;
+}
 function artcode_get_experience( $post ) {
 	$url = get_permalink( $post->ID );
 	//"http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
@@ -377,10 +387,10 @@ function artcode_get_experience( $post ) {
 	
 	$experience = array(
     		"op" => "create",
-    		"id" => urlencode( $url ),
+    		"id" => artcode_id_from_url( $url ),
     		"version" => $lastModified,
     		"name" => $post->post_title,
-		"description" => artcode_filter_content( $post->post_content ),
+		"description" => artcode_clean_text( artcode_filter_content( $post->post_content ) ),
     		"maxEmptyRegions" => 0,
     		"validationRegions" => 0,
     		"validationRegionValue" => 1,
@@ -449,7 +459,7 @@ function artcode_get_experience( $post ) {
 				$marker = array( 
 					"code" => $artcode,
 					"title" => $item->post_title,
-					"description" => artcode_filter_content( $item->post_content ),
+					"description" => artcode_clean_text( artcode_filter_content( $item->post_content ) ),
 					"showDetail" => ($showDetail=='1') ? true : false,
 					"action" => $action
 				 );
