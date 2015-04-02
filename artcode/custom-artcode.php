@@ -24,7 +24,7 @@ while ( have_posts() ) : the_post();
     		"id" => $url,
     		"version" => $lastModified,
     		"name" => the_title(),
-		"description" => filter_content( $post->post_content ),
+		"description" => artcode_filter_content( $post->post_content ),
     		"maxEmptyRegions" => 0,
     		"validationRegions" => 0,
     		"validationRegionValue" => 1,
@@ -89,7 +89,7 @@ while ( have_posts() ) : the_post();
 				$marker = array( 
 					"code" => $artcode,
 					"title" => $item->post_title,
-					"description" => filter_content( $item->post_content ),
+					"description" => artcode_filter_content( $item->post_content ),
 					"showDetail" => ($showDetail) ? true : false,
 					"action" => $action
 				 );

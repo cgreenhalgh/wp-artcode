@@ -1,9 +1,9 @@
 <?php
 /**
  * Plugin Name: artcode
- * Plugin URI: http://aestheticodes.com/
- * Description: Create ArtCode experience from wordpress content (pages and posts).
- * Version: 0.1
+ * Plugin URI: https://github.com/cgreenhalgh/wp-artcode
+ * Description: Create ArtCodes experiences from wordpress content (pages and posts), to view in the ArtCodes App on Android/iPhone.
+ * Version: 0.1.1
  * Author: Chris Greenhalgh
  * Author URI: http://www.cs.nott.ac.uk/~cmg/
  * Network: true
@@ -308,7 +308,7 @@ function artcode_include_template_function( $template_path ) {
     return $template_path;
 }
 // filter content a la wordpress
-function filter_content ( $content ) {
+function artcode_filter_content ( $content ) {
 	$content = apply_filters( 'the_content', $content );
 	$content = str_replace( ']]>', ']]&gt;', $content );
 	// audio may need fixing - player defaults to hidden in WordPress 4.1 when I test...
