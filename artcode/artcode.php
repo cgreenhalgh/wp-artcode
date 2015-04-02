@@ -3,7 +3,7 @@
  * Plugin Name: artcode
  * Plugin URI: https://github.com/cgreenhalgh/wp-artcode
  * Description: Create ArtCodes experiences from wordpress content (pages and posts), to view in the ArtCodes App on Android/iPhone.
- * Version: 0.1.1
+ * Version: 0.1.3
  * Author: Chris Greenhalgh
  * Author URI: http://www.cs.nott.ac.uk/~cmg/
  * Network: true
@@ -21,6 +21,8 @@ Redistribution and use in source and binary forms, with or without modification,
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+
+require_once( dirname(__FILE__) . '/common.php' );
 
 define( "MIN_REGIONS", 1 );
 define( "MAX_REGIONS", 20 );
@@ -95,11 +97,11 @@ function artcode_custom_box( $post ) {
 			$id = $specific_ids[$i];
 			$post = get_post( $id );
 			$artcode = '';
-			$value = get_post_meta( $item->ID, '_artcode_code', true );
+			$value = get_post_meta( $post->ID, '_artcode_code', true );
 			if ( $value ) {
 				$artcode = $value;
 			} else {
-			    	$value = get_post_meta( $item->ID, '_wototo_item_unlock_codes', true );
+			    	$value = get_post_meta( $post->ID, '_wototo_item_unlock_codes', true );
 				if ( $value ) {
         				$unlock_codes = json_decode( $value, true );
 					if ( array_key_exists('artcode', $unlock_codes ) ) {
@@ -114,7 +116,7 @@ function artcode_custom_box( $post ) {
 		<span class="artcode_marker_title"><?php echo esc_html( $post->post_title) ?></span>
 		<span class="description"><?php echo esc_html( $artcode ) ?>
 		<a href="<?php echo get_edit_post_link( $post->ID ) ?>" target="_blank" class="<?php echo !$current_user_can_edit ? 'hide' : '' ?>">Edit</a>
-		<a href="<?php echo get_post_view_url( $post ) ?>" target="_blank" class="">View</a>
+		<a href="<?php echo artcode_get_post_view_url( $post ) ?>" target="_blank" class="">View</a>
 		|
 		<a href='#' class="item-delete submitdelete deletion artcode_marker_remove">Remove</a>
 		<a href='#' class="menu_move_up artcode_marker_up <?php echo $i==0 ? 'hide' : '' ?> ">Up</a>
@@ -125,8 +127,6 @@ function artcode_custom_box( $post ) {
 	}
 ?>	</div>
 <?php	artcode_marker_search_html();
-}
-function artcode_custom_box( $post ) {
 ?>
     <input type="hidden" name="artcode_custom_box_shown" value="1"/>
     <label for="artcode_regions_min">Regions (Minimum)</label><br/>
@@ -157,13 +157,13 @@ function artcode_custom_box( $post ) {
 <?php $value = get_post_meta( $post->ID, '_artcode_checksum', true );
     if(empty($value)) $value = DEFAULT_CHECKSUM; 
 ?>  <select name="artcode_checksum" id="artcode_checksum" class="postbox">
-        <option value="" <?php if ( $value < MIN_CHECKSUM ) echo 'selected'; ?>><?php echo $i ?></option>
+        <option value="" <?php if ( $value < MIN_CHECKSUM ) echo 'selected'; ?>>Disabled</option>
 <?php for($i=MIN_CHECKSUM; $i<=MAX_CHECKSUM; $i++) { 
 ?>        <option value="<?php echo $i ?>" <?php if ( $i == $value ) echo 'selected'; ?>><?php echo $i ?></option>
 <?php } 
 ?>    </select><br/>
-<?php}
-function get_post_view_url( $post ) {
+<?php }
+function artcode_get_post_view_url( $post ) {
 	if ( $post->post_type == 'post' || $post->post_type == 'page' )
 		return get_permalink( $post->ID );
 	else
@@ -218,9 +218,9 @@ function artcode_item_custom_box( $post ) {
     <label for="artcode_item_code">Code</label><br/>
     <input type="text" name="artcode_item_code" id="artcode_item_code" value="<?php echo $value ?>"/><br/>
 <?php
-    $showDetail = get_post_meta( $item->ID, '_artcode_show_detail', true );
+    $showDetail = get_post_meta( $post->ID, '_artcode_show_detail', true );
     if ( $showDetail == '')
-        $showDetail = '1';
+        $showDetail = '0';
 ?>
     <label for="artcode_item_show_detail">Show Detail Screen</label><br/>
     <select name="artcode_item_show_detail" id="artcode_item_show_detail" class="postbox">
@@ -248,19 +248,19 @@ function artcode_save_postdata( $post_id ) {
 	}
     if ( array_key_exists('artcode_item_code', $_POST ) ) {
         update_post_meta( $post_id,
-           '_artcode_item_code',
+           '_artcode_code',
             $_POST['artcode_item_code']
         );
     }
     if ( array_key_exists('artcode_item_show_detail', $_POST ) ) {
         update_post_meta( $post_id,
-           '_artcode_item_show_detail',
+           '_artcode_show_detail',
             $_POST['artcode_item_show_detail']
         );
     }
     if ( array_key_exists('artcode_item_action', $_POST ) ) {
         update_post_meta( $post_id,
-           '_artcode_item_action',
+           '_artcode_action',
             $_POST['artcode_item_action']
         );
     }
@@ -282,7 +282,7 @@ function artcode_save_postdata( $post_id ) {
 // get combined marker ids
 function artcode_get_marker_ids( $artcode_id ) {
 	$marker_ids = array();
-	$specific_ids = get_post_meta( $app_id, '_artcode_marker_ids', true ); 
+	$specific_ids = get_post_meta( $artcode_id, '_artcode_marker_ids', true ); 
 	if ( $specific_ids ) 
 		$specific_ids = json_decode( $specific_ids, true );
 	if ( is_array( $specific_ids ) ) {
@@ -359,7 +359,7 @@ function artcode_ajax_marker_search() {
 			'post_author' => $post->post_author, 
 			'_artcode_code' => $artcode,
 			'edit_url' => get_edit_post_link( $post->ID ), // checks permission, & escaped
-			'view_url' => get_post_view_url( $post ), // &escaped
+			'view_url' => artcode_get_post_view_url( $post ), // &escaped
 		);
 	}
 	if ( count( $posts ) >= 30 )
@@ -370,4 +370,97 @@ function artcode_ajax_marker_search() {
 if ( is_admin() ) {
 	add_action( 'wp_ajax_artcode_marker_search', 'artcode_ajax_marker_search' );
 }
+function artcode_get_experience( $post ) {
+	$url = get_permalink( $post->ID );
+	//"http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+	$lastModified = mysql2date('U', $post->post_modified_gmt);
+	
+	$experience = array(
+    		"op" => "create",
+    		"id" => urlencode( $url ),
+    		"version" => $lastModified,
+    		"name" => $post->post_title,
+		"description" => artcode_filter_content( $post->post_content ),
+    		"maxEmptyRegions" => 0,
+    		"validationRegions" => 0,
+    		"validationRegionValue" => 1,
+		"embeddedChecksum" => false,
+    		"thresholdBehaviour" => "temporalTile",
+	);
+//    		"minRegions": 4,
+	$value = get_post_meta( $post->ID, '_artcode_regions_min', true );
+	if (empty($value))
+		$value = DEFAULT_REGIONS_MIN;
+	$experience["minRegions"] = intval( $value );
+//     		"maxRegions": 10,
+	$value = get_post_meta( $post->ID, '_artcode_regions_max', true );
+	if (empty($value))
+		$value = DEFAULT_REGIONS_MAX;
+	$experience["maxRegions"] = intval( $value );
 
+//    		"maxRegionValue": 6,
+	$value = get_post_meta( $post->ID, '_artcode_max_region_value', true );
+	if (empty($value))
+		$value = DEFAULT_MAX_REGION_VALUE;
+	$experience["maxRegionValue"] = intval( $value );
+//    		"checksumModulo": 1,
+	$value = get_post_meta( $post->ID, '_artcode_checksum', true );
+	if (empty($value))
+		$value = DEFAULT_CHECKSUM;
+	$value = intval( $value );
+	if ( $value < 2 )
+		$value = 1; //off
+	$experience["checksumModulo"] = $value;
+	// TODO icon separate from image
+	$thumbid = get_post_thumbnail_id($post->ID);
+	if ( $thumbid ) {
+		$experience['image'] = $experience['icon'] = artcode_get_iconurl( $thumbid );
+	}
+	$markers = array();
+	$marker_ids = array();
+	$specific_ids = get_post_meta( $post->ID, '_artcode_marker_ids', true ); 
+	if ( $specific_ids ) 
+		$specific_ids = json_decode( $specific_ids, true );
+	if ( is_array( $specific_ids ) ) 
+		$marker_ids = $specific_ids;
+	foreach( $marker_ids as $item_id ) {
+		$item = get_post( $item_id );
+		if ( $item ) {
+			$artcode = '';
+		    	$value = get_post_meta( $item->ID, '_artcode_code', true );
+			if ( $value ) {
+				$artcode = $value;
+			} else {
+			    	$value = get_post_meta( $item->ID, '_wototo_item_unlock_codes', true );
+				if ( $value ) {
+       					$unlock_codes = json_decode( $value, true );
+					if ( array_key_exists('artcode', $unlock_codes ) ) {
+						$artcode = $unlock_codes['artcode'];
+					}
+				}
+			}
+			if ( $artcode ) { 
+			    	$showDetail = get_post_meta( $item->ID, '_artcode_show_detail', true );
+				if ( $showDetail == '')
+					$showDetail = '0';
+			    	$action = get_post_meta( $item->ID, '_artcode_action', true );
+				if ( !$action )
+					$action = get_permalink( $item->ID );
+				$marker = array( 
+					"code" => $artcode,
+					"title" => $item->post_title,
+					"description" => artcode_filter_content( $item->post_content ),
+					"showDetail" => ($showDetail=='1') ? true : false,
+					"action" => $action
+				 );
+				$thumbid = get_post_thumbnail_id($item->ID);
+				if ( $thumbid ) {
+					$marker['image'] = artcode_get_iconurl( $thumbid );
+				}
+				$markers[] = $marker;
+			}
+		}
+	}
+	$experience['markers'] = $markers;
+	return json_encode( $experience );
+}

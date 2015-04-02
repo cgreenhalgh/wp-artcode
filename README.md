@@ -61,16 +61,15 @@ Once you have opened the experience in the ArtCode app it should get copied onto
 
 ## Notes
 
-As of 2015-04-02 this plugin is using a full URL for the experience ID, which breaks (e.g.) sharing the experience via the app. 
+As of 2015-04-02 the experience and marker descriptions usually include HTML tags and elements, which are handled by the app (the raw tags and entities are shown).
 
-As of 2015-04-02 opening the experience in the ArtCode App on Android works, but the experience is copied the first time you do this, and subsequently opening an updated version doesn't seem to update the experience in the app. 
+As of 2015-04-02 this plugin is using a url-encoded full URL for the experience ID, which appears to break (e.g.) sharing the experience via the app. 
+
+As of 2015-04-02 opening the experience in the ArtCode App on Android works. Updating the experience and downloading it again appears to update the experience on the phone.
 
 As of 2015-04-02 opening the experience in the iPhone App doesn't seem to work.
 
 There is currently no automatic way to import an experience created in the App (or changes made in the App) back into the WordPress editor.
 
 The same (featured) image is currently used for the icon and the image associated with an experience.
-
-Whether an experience created in this way is successfully imported to the ArtCode server is currently unknown/untested (that's what is supposed to happen).
-
 
