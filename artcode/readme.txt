@@ -1,7 +1,7 @@
 === artcode ===
 Contributors: cmgreenhalgh
 Requires at least: 4.0
-Tested up to: 4.1
+Tested up to: 4.2.2
 License: BSD 2-Clause
 License URI: http://opensource.org/licenses/BSD-2-Clause
 

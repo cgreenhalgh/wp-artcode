@@ -3,7 +3,7 @@
  * Plugin Name: artcode
  * Plugin URI: https://github.com/cgreenhalgh/wp-artcode
  * Description: Create ArtCodes experiences from wordpress content (pages and posts), to view in the ArtCodes App on Android/iPhone.
- * Version: 0.1.5
+ * Version: 0.1.6
  * Author: Chris Greenhalgh
  * Author URI: http://www.cs.nott.ac.uk/~cmg/
  * Network: true

@@ -13,7 +13,7 @@ wp_enqueue_style( 'artcode-css', plugins_url( 'artcode.css', __FILE__ ) );
 get_header(); ?>
 
 	<div id="primary" class="content-area">
-		<main id="main" class="site-main" role="main">
+		<main id="main" class="site-content" role="main">
 
 		<?php
 		// Start the loop.
@@ -26,7 +26,8 @@ get_header(); ?>
 			 */
 			get_template_part( 'content', get_post_format() );
 
-			$artcode_url = get_permalink( $post->ID );
+			$page_url = get_permalink( $post->ID );
+			$artcode_url = $page_url;
 			if ( strpos( $artcode_url, '?' ) === FALSE )
 				$artcode_url .= '?artcodeexperience';
 			else
@@ -44,9 +45,8 @@ function popupqr(url) {
 	return false;
 }
 </script>
-			<h2>Artcode Experience  Links</h2>
+			<h2>Artcode Experience  Links  <a class="artcode-link-qr" onclick="return popupqr('<?php echo $page_url ?>')">QR</a></h2>
 			<p><a class="artcode-link" href="<?php echo $artcode_url ?>">Open in ArtCode Reader</a>
-			<a class="artcode-link-qr" onclick="return popupqr('<?php echo $artcode_url ?>')">QR</a></p>
 			<br/><span class="artcode-warning">Note: requires seperate install of ArtCode app (Android or iPhone)</span></p>
 		</div>
 	</div>
@@ -75,4 +75,7 @@ function popupqr(url) {
 		</main><!-- .site-main -->
 	</div><!-- .content-area -->
 
-<?php get_footer(); ?>
+<?php 
+get_sidebar( 'content' );
+get_sidebar();
+get_footer(); ?>

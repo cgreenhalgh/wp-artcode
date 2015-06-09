@@ -63,8 +63,6 @@ Once you have opened the experience in the ArtCode app it should get copied onto
 
 As of 2015-04-02 the experience and marker descriptions have HTML tags stripped out, as they don't seem to be supported by the app at the moment.
 
-As of 2015-04-02 this plugin is using a url-encoded full URL for the experience ID, which appears to break (e.g.) sharing the experience via the app. 
-
 As of 2015-04-02 opening the experience in the ArtCode App on Android works. Updating the experience and downloading it again appears to update the experience on the phone.
 
 As of 2015-04-02 opening the experience in the iPhone App doesn't seem to work.
