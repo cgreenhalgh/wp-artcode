@@ -12,7 +12,7 @@ header( "Content-Type: application/x-artcode" );
 // Start the loop.
 if ( have_posts() ) {
 	the_post();
-	header( "Content-Disposition: inline;filename=".$post->ID.".artcode" );
+	header( "Content-Disposition: attachment;filename=".$post->ID.".artcode" );
 	echo artcode_get_experience( $post );
 }
 
